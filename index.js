@@ -1,48 +1,91 @@
-class ProductManager {
-  constructor(){
-    this.products = [];
-  }
-  getProducts = () => {
-    return this.products;
-  };
-  addProduct = (title, description, price, thumbnail, code, stock) => {
-    const product = {
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-    };
+const fs = require('fs')
 
-    const validationCode = this.products.find((product) => product.code === code);
-    if (validationCode) {
-      console.log(`The code ${validationCode} is already in use`);
-      return;
+class ProductManager {
+    constructor(filePath){
+        this.product = []
+        this.path = filePath
     }
-    else{
-      if (this.products.length === 0) {
-        product.id = 1;
-      }
-      else {
-        product.id = this.products[this.products.length - 1].id + 1;
-      }
-      this.products.push(product);
-    } 
-  };
-  getProductById = (id) => {
-    const productId = this.products.find((product) => product.id === id);
-    if (!productId){
-      return "Product not found";
+
+    getProducts = async() => {
+        try{
+            const data = await fs.promises.readFile(this.path, 'utf-8')
+            this.product = JSON.parse(data);
+            return this.product
+        }
+        catch (error){
+            return(error)
+        }
     }
-    else {
-      return productId;
+
+    addProduct  = async (newProduct) => {
+        this.getProducts()
+        try{
+            if (!newProduct.title ||
+                !newProduct.description ||
+                !newProduct.price ||
+                !newProduct.thumbnail ||
+                !newProduct.stock ||
+                !newProduct.code) return 'Error: Todos los campos son obligatorios'
+            let codProd = this.product.find(prod => prod.code === newProduct.code)
+            if (codProd) return 'Codigo duplicado' 
+            this.product.push({id: this.product.length + 1 , ...newProduct})
+            await fs.promises.writeFile(this.path, JSON.stringify(this.product,'utf-8','\t'))
+            return 'Producto cargado'
+        }
+        catch (error){
+            return(error)
+        }
+	}	
+
+    getProductById = async (id) => {
+        this.getProducts()
+        let producto = this.product.find(prod => prod.id === id)
+        if (!producto) return 'No encontrado' 
+        return producto
     }
-  };
+
+    updateProduct  = async (id, updProd) => {
+        try{
+            let producto = this.product.find(prod => prod.id === id)
+            if (!producto) return 'No encontrado'
+            producto.title = updProd.title
+            producto.description = updProd.description
+            producto.price = updProd.price
+            producto.thumbnail = updProd.thumbnail
+            producto.stock = updProd.stock
+            producto.code= updProd.code
+            await fs.promises.writeFile(this.path, JSON.stringify(this.product,'utf-8','\t'))
+            return 'Producto Actualizado'
+            }
+        catch (error){
+            return(error)
+        }
+    }
+
+    deleteProduct  = async (idDelete) => {
+        try{
+            const remove = this.product.filter(prod => prod.id !== idDelete) 
+            if (!remove) return 'Id no encontrado'
+            console.log(remove)
+            await fs.promises.writeFile(this.path, JSON.stringify(remove,'utf-8','\t'))
+            return 'Producto eliminado'
+        }
+        catch (error){
+            return(error)
+        }
+    }
 }
-const product = new ProductManager();
-console.log(product.getProducts());
-product.addProduct("producto prueba", "pruebaa", 200, "sin imagen", "abc45", 25);
-product.addProduct("producto prueba 2", "prueba", 200, "sin imagn", "ab45", 25);
-console.log(product.getProducts());
-console.log(product.getProductById(1));
+
+const producto = new ProductManager('./Productos.json');
+const fileUse = async() =>{
+    console.log(await producto.getProducts())
+    console.log(await producto.addProduct({title: 'producto prueba', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 25, code: 'abc123'}))
+    console.log(await producto.addProduct({title: 'producto prueba2', description: 'Este es un producto prueba2', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc124'}))
+    console.log(await producto.addProduct({title: 'producto prueba3', description: 'Este es un producto prueba3', price: 300, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+    console.log(await producto.getProducts())
+    console.log(await producto.updateProduct(1, {title: 'producto modificado', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+    console.log(await producto.deleteProduct(2))
+    console.log(await producto.getProducts())
+    console.table(await producto.getProductById(2))
+}
+fileUse();
