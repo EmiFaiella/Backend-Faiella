@@ -20,5 +20,5 @@ app.get('/products/:pid', async(request, response)=>{
     response.send(prod)
 })
 
-app.listen(8050, () => {
-    console.log('Escuchando el puerto 8050')})
+app.listen(8080, () => {
+    console.log('Escuchando el puerto 8080')})
