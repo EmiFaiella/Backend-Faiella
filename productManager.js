@@ -76,16 +76,18 @@ class ProductManager {
     }
 }
 
-const producto = new ProductManager('./Productos.json');
-const fileUse = async() =>{
-    console.log(await producto.getProducts())
-    console.log(await producto.addProduct({title: 'producto prueba', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 25, code: 'abc123'}))
-    console.log(await producto.addProduct({title: 'producto prueba2', description: 'Este es un producto prueba2', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc124'}))
-    console.log(await producto.addProduct({title: 'producto prueba3', description: 'Este es un producto prueba3', price: 300, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
-    console.log(await producto.getProducts())
-    console.log(await producto.updateProduct(1, {title: 'producto modificado', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
-    console.log(await producto.deleteProduct(2))
-    console.log(await producto.getProducts())
-    console.table(await producto.getProductById(2))
-}
-fileUse();
+module.exports = { ProductManager };
+
+// const producto = new ProductManager('./Productos.json');
+//const fileUse = async() =>{
+//    console.log(await producto.getProducts())
+//    console.log(await producto.addProduct({title: 'producto prueba', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 25, code: 'abc123'}))
+//    console.log(await producto.addProduct({title: 'producto prueba2', description: 'Este es un producto prueba2', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc124'}))
+//    console.log(await producto.addProduct({title: 'producto prueba3', description: 'Este es un producto prueba3', price: 300, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+//    console.log(await producto.getProducts())
+//    console.log(await producto.updateProduct(1, {title: 'producto modificado', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+//    console.log(await producto.deleteProduct(2))
+//    console.log(await producto.getProducts())
+//    console.table(await producto.getProductById(2))
+//}
+//fileUse();
